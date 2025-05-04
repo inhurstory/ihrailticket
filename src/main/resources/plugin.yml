@@ -1,0 +1,34 @@
+name: ihrailticket
+version: '${project.version}'
+main: inhurstory.ihrailticket.Ihrailticket
+api-version: '1.21.4'
+commands:
+  ihrailticket:
+    description: Hello World
+    usage: /ihrailticket <subcommand> [arguments]
+    aliases: [iht]
+    permission: ihrailticket.use
+    permission-message: You do not have permission to use this command.
+  ihtpconfirm:
+    description: 確認傳送
+    usage: /ihtpconfirm
+  ihtpcancel:
+    description: 取消傳送
+    usage: /ihtpcancel
+
+permissions:
+  ihrailticket.use:
+    description: 使用主 ihrailticket 指令的基本權限
+    default: op
+
+  ihrailticket.tp.self:
+    description: 允許玩家傳送自己
+    default: op
+
+  ihrailticket.tp.others:
+    description: 允許玩家傳送其他人
+    default: op
+
+  ihrailticket.gps:
+    description: 查看玩家座標
+    default: op
