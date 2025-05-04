@@ -17,4 +17,4 @@ Tested Minecraft Versions: 1.21.4
 - **CMI**
 - **Vault**
 - **任意經濟系統**
-- - **任意選單插件**
+- **任意選單插件**
