@@ -26,14 +26,14 @@ public final class Ihrailticket extends JavaPlugin {
         saveDefaultConfig();
 
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            getLogger().severe("Vault 未安裝，插件無法運行");
+            getLogger().severe("Vault 未安裝，請先安裝");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
         economy = getServer().getServicesManager().load(Economy.class);
         if (economy == null) {
-            getLogger().severe("未找到經濟插件，插件無法運行");
+            getLogger().severe("未找到經濟插件，請先安裝");
             getServer().getPluginManager().disablePlugin(this);
         }
     }
@@ -89,7 +89,7 @@ public final class Ihrailticket extends JavaPlugin {
         }
 
         String sub = args[0];
-
+        //debug用，正常情況不會用到
         if (sub.equalsIgnoreCase("gps")) {
             if (args.length == 2) {
                 if (player != null && !player.hasPermission("ihrailticket.gps")) {
@@ -112,7 +112,7 @@ public final class Ihrailticket extends JavaPlugin {
             }
             return true;
         }
-
+        //沒事不要開這個權限，不然玩家可以在任意地點使用系統
         if (sub.equalsIgnoreCase("tp")) {
             if (args.length == 2 && isPlayer) {
                 if (!player.hasPermission("ihrailticket.tp.self")) {
@@ -137,7 +137,7 @@ public final class Ihrailticket extends JavaPlugin {
                 return true;
             }
 
-            // 後台強制傳送他人
+            // 強制傳送他人，裝到選單時請使用這種方式
             if (args.length == 3) {
                 if (!sender.hasPermission("ihrailticket.tp.others")) {
                     sender.sendMessage(ChatColor.RED + "你沒有權限操作IHRail鐵路系統運送其他玩家。");
