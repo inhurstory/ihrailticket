@@ -7,10 +7,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import net.milkbowl.vault.economy.Economy;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -18,12 +24,15 @@ import java.util.UUID;
 public final class Ihrailticket extends JavaPlugin {
     private Economy economy;
     private final Map<UUID, PendingTeleport> pendingTeleports = new HashMap<>();
+    private FileConfiguration statsConfig = null;
+    private File statsFile = null;
 
     @Override
     public void onEnable() {
         getLogger().info("歡迎使用IHRail票務系統");
 
         saveDefaultConfig();
+        loadWarpUsedCount();
 
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             getLogger().severe("Vault 未安裝，請先安裝");
@@ -41,6 +50,43 @@ public final class Ihrailticket extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("IHRail票務系統關機中");
+    }
+
+    public void loadWarpUsedCount() {
+        statsFile = new File(getDataFolder(), "save.yml");
+        if (!statsFile.exists()) {
+            try {
+                getDataFolder().mkdir();
+                statsFile.createNewFile();
+            } catch (IOException e) {
+                getLogger().severe("Could not create save.yml!");
+                e.printStackTrace();
+            }
+        }
+        statsConfig = YamlConfiguration.loadConfiguration(statsFile);
+    }
+
+    public void saveWarpUsedCount() {
+        try {
+            statsConfig.save(statsFile);
+        } catch (IOException e) {
+            getLogger().severe("Could not save stats to " + statsFile);
+            e.printStackTrace();
+        }
+    }
+
+    public void incrementWarpUsedCount(String warpName) {
+        String month = new SimpleDateFormat("yyyy-MM").format(new Date());
+        String path = "teleport-stats." + month + "." + warpName;
+        int currentCount = statsConfig.getInt(path, 0);
+        statsConfig.set(path, currentCount + 1);
+    }
+
+    public void addTotalEarn(double amount) {
+        String month = new SimpleDateFormat("yyyy-MM").format(new Date());
+        String path = "teleport-stats." + month + ".total_earn";
+        double currentEarn = statsConfig.getDouble(path, 0.0);
+        statsConfig.set(path, currentEarn + amount);
     }
 
     @Override
@@ -61,6 +107,9 @@ public final class Ihrailticket extends JavaPlugin {
                 economy.withdrawPlayer(player, pending.cost);
                 player.teleport(pending.destination);
                 player.sendMessage(ChatColor.GREEN + "歡迎搭乘IHRail鐵路系統，正在前往車站編號 " + pending.warpName + "，車資: " + String.format("%.2f", pending.cost));
+                incrementWarpUsedCount(pending.warpName);
+                addTotalEarn(pending.cost);
+                saveWarpUsedCount();
             } else {
                 player.sendMessage(ChatColor.RED + "餘額不足，需 " + String.format("%.2f", pending.cost));
             }
