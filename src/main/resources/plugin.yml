@@ -1,7 +1,7 @@
 name: ihrailticket
 version: '${project.version}'
 main: inhurstory.ihrailticket.Ihrailticket
-api-version: '1.21.4'
+api-version: '1.21'
 commands:
   ihrailticket:
     description: Hello World
